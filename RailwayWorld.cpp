@@ -281,34 +281,6 @@ void display(void)
 		Point u = initPoint((p3.x - p1.x) / len, (p3.y - p1.y) / len, (p3.z - p1.z) / len);
 		
 		glPushMatrix();
-			
-			//list<particle>::iterator it;
-			//particle p;
-			
-			////Update particles
-			
-			//for (it = parList.begin(); it != parList.end(); it++) {
-				//glPushMatrix();
-					//glTranslatef(it->pos[0], it->pos[1], it->pos[2]);
-					//glTranslatef(-7.0, 0.0, 0.0);
-					//glScalef(it->size, it->size, it->size);
-					//smokeParticle();
-				//glPopMatrix();
-			//}
-				//it->size = ...;
-				//it->delta = ...;
-			//for (int i = 0; i < 3; i++) {  // Smoke
-				//if (!(smoke[i].z == 150.0 && smoke[i].x < 40 && smoke[i].x > -60 && smoke[i].y > 25.0)) {
-					//glPushMatrix();
-						//glColor4f(1.0, 1.0, 1.0, 1.0);
-						//glTranslatef(smoke[i].x, smoke[i].y, smoke[i].z);
-						//glRotatef(atan2(u.z, -u.x) * 180.0 / 3.14159265, 0.0, 1.0, 0.0);
-						//glTranslatef(-7.0, 0.0, 0.0);
-						//glutSolidSphere(3.0, 10, 10);
-					//glPopMatrix();
-				//}
-			//}
-		
 			glTranslatef(x_points[theta], 1.0, z_points[theta]);
 			glRotatef(atan2(u.z, -u.x) * 180.0 / 3.14159265, 0.0, 1.0, 0.0);
 			engine(theta);		 //locomotive
@@ -377,17 +349,17 @@ void myTimer(int value)
 		theta = 0;
 		delay = 3000;
 	} 
-	else if (theta > points - 100) {
-		delay = 20;
-	}
-	else if (theta > points - 50) {
+	else if (theta > points - 60) {
 		delay = 30;
 	}
-	else if (theta < 50) {
+	else if (theta > points - 170) {
+		delay = 17;
+	}
+	else if (theta < 60) {
 		delay = 30;
 	}
-	else if (theta < 100) {
-		delay = 20;
+	else if (theta < 170) {
+		delay = 17;
 	}
 	glutPostRedisplay();
 	glutTimerFunc(delay, myTimer, 0);

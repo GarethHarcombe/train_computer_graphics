@@ -17,14 +17,14 @@ using std::ifstream;
 
 float toRad = 3.14159265/180.0;  //Conversion from degrees to radians
 GLUquadricObj*	q;
-GLuint txId[10];
+GLuint txId[11];
 
 //--------------------------------------------------------------------------------
 void loadTexture()
 {
 	q = gluNewQuadric();
 	
-	glGenTextures(10, txId);   //Get 6 texture IDs 
+	glGenTextures(11, txId);   //Get 6 texture IDs 
 	glBindTexture(GL_TEXTURE_2D, txId[0]);  //Use this texture name for the following OpenGL texture
 	loadBMP("wheel.bmp");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -72,6 +72,11 @@ void loadTexture()
 	
 	glBindTexture(GL_TEXTURE_2D, txId[9]);
 	loadBMP("roof.bmp");
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	
+	glBindTexture(GL_TEXTURE_2D, txId[10]);
+	loadBMP("car.bmp");
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 }
@@ -305,18 +310,99 @@ void road()
 
 void car()
 {
-	glColor4f(0.8, 0.8, 0.0, 1.0);   
-    glPushMatrix();  // Base
-      glTranslatef(0.0, 5.0, 0.0);
-      glScalef(20.0, 5.0, 10.0);
-      glutSolidCube(1.0);
-    glPopMatrix();
+	glColor4f(0.8, 0.8, 0.0, 1.0);
     
-    glPushMatrix();  // Hood
-      glTranslatef(-5.0, 9.0, 0.0);
-      glScalef(10.0, 5.0, 10.0);
-      glutSolidCube(1.0);
-    glPopMatrix();
+    glEnable(GL_TEXTURE_2D);
+    glBindTexture(GL_TEXTURE_2D, txId[10]);
+	glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
+    
+    glBegin(GL_QUADS);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		float x = 0;
+		float z = 0;
+		
+		float width = 10;  
+		float depth = 5; // length
+		
+		float xs[] = {x - width, x - width, x + width, x + width};
+		float ys[] = {1.0,      6.0,     6.0,     1.0};
+		float zs[] = {z - depth, z - depth, z - depth, z - depth};
+		
+		glNormal3f(0.0, 1.0, 0.0);  // Top
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs[0], ys[1], zs[0] + 2 * depth);
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs[2], ys[1], zs[0] + 2 * depth);
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs[2], ys[1], zs[0]);
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs[0], ys[1], zs[0]);
+		
+		glNormal3f(-1.0, 0.0, 0.0);  // Back
+		glTexCoord2f(568.0 / 1024.0, 450.0 / 1024.0); glVertex3f(xs[0], ys[0], zs[0]);
+		glTexCoord2f(568.0 / 1024.0, 620.0 / 1024.0); glVertex3f(xs[1], ys[1], zs[1]);
+		glTexCoord2f(979.0 / 1024.0, 620.0 / 1024.0); glVertex3f(xs[1], ys[1], zs[1] + 2 * depth);
+		glTexCoord2f(979.0 / 1024.0, 450.0 / 1024.0); glVertex3f(xs[0], ys[0], zs[0] + 2 * depth);
+		
+		glNormal3f(1.0, 0.0, 0.0);  // Front
+		glTexCoord2f(92.0 / 1024.0, 670.0 / 1024.0); glVertex3f(xs[2], ys[0], zs[0]);
+		glTexCoord2f(92.0 / 1024.0, 820.0 / 1024.0); glVertex3f(xs[3], ys[1], zs[1]);
+		glTexCoord2f(500.0 / 1024.0, 820.0 / 1024.0); glVertex3f(xs[3], ys[1], zs[1] + 2 * depth);
+		glTexCoord2f(500.0 / 1024.0, 670.0 / 1024.0); glVertex3f(xs[2], ys[0], zs[0] + 2 * depth);
+		
+		glNormal3f(0.0, 0.0, -1.0);   // Side 1
+		glTexCoord2f(292.0 / 1024.0, 0.055); glVertex3f(xs[0], ys[0], zs[0]);
+		glTexCoord2f(292.0 / 1024.0, 0.23); glVertex3f(xs[1], ys[1], zs[1]);
+		glTexCoord2f(702.0 / 1024.0, 0.23); glVertex3f(xs[2], ys[2], zs[2]);
+		glTexCoord2f(702.0 / 1024.0, 0.055); glVertex3f(xs[3], ys[3], zs[3]);
+		
+		glNormal3f(0.0, 0.0, 1.0);   // Side 2
+		glTexCoord2f(292.0 / 1024.0, 0.055); glVertex3f(xs[0], ys[0], zs[0] + 2 * depth);
+		glTexCoord2f(292.0 / 1024.0, 0.23); glVertex3f(xs[1], ys[1], zs[1] + 2 * depth);
+		glTexCoord2f(702.0 / 1024.0, 0.23); glVertex3f(xs[2], ys[2], zs[2] + 2 * depth);
+		glTexCoord2f(702.0 / 1024.0, 0.055); glVertex3f(xs[3], ys[3], zs[3] + 2 * depth);
+	glEnd();
+	
+	glBegin(GL_QUADS);
+		glColor4f(1.0, 1.0, 1.0, 1.0);
+		x = 0;
+		z = 0;
+		
+		width = 10;  
+		depth = 5; // length
+		
+		float xs1[] = {x - width, x - width, x, x};
+		float ys1[] = {6.0,       10.0,     10.0,       6.0};
+		float zs1[] = {z - depth, z - depth, z - depth, z - depth};
+		
+		glNormal3f(0.0, 1.0, 0.0);  // Top
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs1[0], ys1[1], zs1[0] + 2 * depth);
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs1[2], ys1[1], zs1[0] + 2 * depth);
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs1[2], ys1[1], zs1[0]);
+		glTexCoord2f(0.9, 0.9); glVertex3f(xs1[0], ys1[1], zs1[0]);
+		
+		glNormal3f(-1.0, 0.0, 0.0);  // Back
+		glTexCoord2f(72.0 / 1024.0, 500.0 / 1024.0); glVertex3f(xs1[0], ys1[0], zs1[0]);
+		glTexCoord2f(72.0 / 1024.0, 590.0 / 1024.0); glVertex3f(xs1[1], ys1[1], zs1[1]);
+		glTexCoord2f(348.0 / 1024.0, 590.0 / 1024.0); glVertex3f(xs1[1], ys1[1], zs1[1] + 2 * depth);
+		glTexCoord2f(348.0 / 1024.0, 500.0 / 1024.0); glVertex3f(xs1[0], ys1[0], zs1[0] + 2 * depth);
+		
+		glNormal3f(1.0, 0.0, 0.0);  // Front
+		glTexCoord2f(618.0 / 1024.0, 0.25); glVertex3f(xs1[2], ys1[0], zs1[0]);
+		glTexCoord2f(618.0 / 1024.0, 0.32); glVertex3f(xs1[3], ys1[1], zs1[1]);
+		glTexCoord2f(778.0 / 1024.0, 0.32); glVertex3f(xs1[3], ys1[1], zs1[1] + 2 * depth);
+		glTexCoord2f(778.0 / 1024.0, 0.25); glVertex3f(xs1[2], ys1[0], zs1[0] + 2 * depth);
+		
+		glNormal3f(0.0, 0.0, -1.0);   // Side 1
+		glTexCoord2f(618.0 / 1024.0, 0.25); glVertex3f(xs1[0], ys1[0], zs1[0]);
+		glTexCoord2f(618.0 / 1024.0, 0.32); glVertex3f(xs1[1], ys1[1], zs1[1]);
+		glTexCoord2f(778.0 / 1024.0, 0.32); glVertex3f(xs1[2], ys1[2], zs1[2]);
+		glTexCoord2f(778.0 / 1024.0, 0.25); glVertex3f(xs1[3], ys1[3], zs1[3]);
+		
+		glNormal3f(0.0, 0.0, 1.0);   // Side 2
+		glTexCoord2f(618.0 / 1024.0, 0.25); glVertex3f(xs1[0], ys1[0], zs1[0] + 2 * depth);
+		glTexCoord2f(618.0 / 1024.0, 0.32); glVertex3f(xs1[1], ys1[1], zs1[1] + 2 * depth);
+		glTexCoord2f(778.0 / 1024.0, 0.32); glVertex3f(xs1[2], ys1[2], zs1[2] + 2 * depth);
+		glTexCoord2f(778.0 / 1024.0, 0.25); glVertex3f(xs1[3], ys1[3], zs1[3] + 2 * depth);
+	glEnd();
+	
+	glDisable(GL_TEXTURE_2D);
 	
 	float wx[4] = {  -8,   8,   -8,    8 }; 
 	float wz[4] = { 5.1, 5.1, -5.1, -5.1 };
@@ -623,9 +709,9 @@ void tunnel()
 	
     glBegin(GL_QUADS);
 	float radius = inRad;
-	for (int i = -90; i < 90; i += 5)    //5 deg intervals
+	for (int i = -90; i < 90; i += 5)    //  5 deg intervals
 	{
-		angle1 = i * toRad;       //Computation of angles, cos, sin etc
+		angle1 = i * toRad;       //  Computation of angles, cos, sin etc
 		angle2 = (i + 5) * toRad;
 		ca1 = cos(angle1); ca2 = cos(angle2);
 		sa1 = sin(angle1); sa2 = sin(angle2);
@@ -633,28 +719,28 @@ void tunnel()
 		x2 = (radius + tunnelThickness)*sa1; y2 = (radius + tunnelThickness)*ca1;
 		x3 = (radius + tunnelThickness)*sa2; y3 = (radius + tunnelThickness)*ca2;
 		x4 = (radius - tunnelThickness)*sa2; y4 = (radius - tunnelThickness)*ca2;
-
-		glNormal3f(0., 0., 1.);       //Quad 1 end of the tunnel
+		
+		glNormal3f(0., 0., 1.);       //  Quad 1 end of the tunnel
 		glTexCoord2f(0.0, 0.5); glVertex3f(x1, y1, -1 * length / 2.0);
 		glTexCoord2f(0.16, 0.5); glVertex3f(x2, y2, -1 * length / 2.0);
 		glTexCoord2f(0.16, 0.6); glVertex3f(x3, y3, -1 * length / 2.0);
 		glTexCoord2f(0.0, 0.6); glVertex3f(x4, y4, -1 * length / 2.0);
-
-		glNormal3f(-sa1, -ca1, 0.0);   //Quad 2 facing inward
+		
+		glNormal3f(-sa1, -ca1, 0.0);   //  Quad 2 facing inward
 		glTexCoord2f(0.0, 0.0); glVertex3f(x1, y1, -1 * length / 2.0);
 		glTexCoord2f(1.8, 0.0); glVertex3f(x1, y1, length / 2.0);
 		glNormal3f(-sa2, -ca2, 0.0);
 		glTexCoord2f(1.8, 0.1); glVertex3f(x4, y4, length / 2.0);
 		glTexCoord2f(0.0, 0.1); glVertex3f(x4, y4, -1 * length / 2.0);
-
-		glNormal3f(sa1, ca1, 0.0);   //Quad 3 facing outward
+		
+		glNormal3f(sa1, ca1, 0.0);   //  Quad 3 facing outward
 		glTexCoord2f(0.0, 0.0); glVertex3f(x2, y2, length / 2.0);
 		glTexCoord2f(1.8, 0.0); glVertex3f(x2, y2, -1 * length / 2.0);
 		glNormal3f(sa2, ca2, 0.0);
 		glTexCoord2f(1.8, 0.1); glVertex3f(x3, y3, -1 * length / 2.0);
 		glTexCoord2f(0.0, 0.1); glVertex3f(x3, y3, length / 2.0);
 		
-		glNormal3f(0., 0., -1.);       //Quad 4 other end of the tunnel
+		glNormal3f(0., 0., -1.);       //  Quad 4 other end of the tunnel
 		glTexCoord2f(0.0, 0.5); glVertex3f(x1, y1, length / 2.0);
 		glTexCoord2f(0.16, 0.5); glVertex3f(x2, y2, length / 2.0);
 		glTexCoord2f(0.16, 0.6); glVertex3f(x3, y3, length / 2.0);
